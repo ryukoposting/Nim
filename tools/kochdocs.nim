@@ -121,7 +121,7 @@ doc/manual/var_t_return.rst
 """.splitWhitespace()
 
   doc = """
-lib/system.nim
+doc/system.nim
 lib/system/io.nim
 lib/system/nimscript.nim
 lib/system/assertions.nim
