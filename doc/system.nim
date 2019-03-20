@@ -189,7 +189,7 @@ Proc                                           Usage
 `a .. b<#..,T,U>`_                             Binary slice that constructs an interval
                                                `[a, b]`
 [a ..< b](#..<.t,untyped,untyped)              Interval `[a, b>` (excluded upper bound)
-[runnableExamples](#runnableExamples,untyped)  Create testable documentation
+[runnableExamples](#runnableExamples,RootObj)  Create testable documentation
 =============================================  ============================================
 ]##
 
@@ -1708,7 +1708,7 @@ proc cstringArrayToSeq*(a: cstringArray): seq[string] =
 
 
 
-proc defined*(x: untyped): bool {.magic: "Defined", noSideEffect, compileTime.} =
+proc defined*(x: RootObj): bool {.magic: "Defined", noSideEffect, compileTime.} =
   ## Special compile-time procedure that checks whether `x` is
   ## defined.
   ##
@@ -1722,7 +1722,7 @@ proc defined*(x: untyped): bool {.magic: "Defined", noSideEffect, compileTime.} 
   ##   # Put here the normal code
   discard
 
-proc runnableExamples*(body: untyped) {.magic: "RunnableExamples".} =
+proc runnableExamples*(body: RootObj) {.magic: "RunnableExamples".} =
   ## A section you should use to mark `runnable example`:idx: code with.
   ##
   ## - In normal debug and release builds code within
@@ -1746,7 +1746,7 @@ proc runnableExamples*(body: untyped) {.magic: "RunnableExamples".} =
   ##     result = 2 * x
   discard
 
-proc declared*(x: untyped): bool {.magic: "Defined", noSideEffect, compileTime.} =
+proc declared*(x: RootObj): bool {.magic: "Defined", noSideEffect, compileTime.} =
   ## Special compile-time procedure that checks whether `x` is
   ## declared. `x` has to be an identifier or a qualified identifier.
   ##
@@ -1765,7 +1765,7 @@ proc declared*(x: untyped): bool {.magic: "Defined", noSideEffect, compileTime.}
 when defined(useNimRtl):
   {.deadCodeElim: on.}  # dce option deprecated
 
-proc declaredInScope*(x: untyped): bool {.
+proc declaredInScope*(x: RootObj): bool {.
   magic: "DefinedInScope", noSideEffect, compileTime.} =
   ## Special compile-time procedure that checks whether `x` is
   ## declared in the current scope. `x` has to be an identifier.
@@ -1817,7 +1817,7 @@ type
     typeOfProc,      ## Prefer the interpretation that means `x` is a proc call.
     typeOfIter       ## Prefer the interpretation that means `x` is an iterator call.
 
-proc typeof*(x: untyped; mode = typeOfIter): typeDesc {.
+proc typeof*(x: RootObj; mode = typeOfIter): typeDesc {.
   magic: "TypeOf", noSideEffect, compileTime.} =
   ## Builtin `typeof` operation for accessing the type of an expression.
   ## Since version 0.20.0.
@@ -1890,12 +1890,12 @@ when defined(nimArrIdx):
     x: S) {.noSideEffect, magic: "ArrPut".}
   proc `=`*[T](dest: var T; src: T) {.noSideEffect, magic: "Asgn".}
 
-  proc `=destroy`*[T](x: var T) {.inline, magic: "Destroy".} =
-    ## Generic `destructor`:idx: implementation that can be overriden.
-    discard
-  proc `=sink`*[T](x: var T; y: T) {.inline, magic: "Asgn".} =
-    ## Generic `sink`:idx: implementation that can be overriden.
-    shallowCopy(x, y)
+  # proc `=destroy`*[T: object](x: var T) {.inline, magic: "Destroy".} =
+    # ## Generic `destructor`:idx: implementation that can be overriden.
+    # discard
+  # proc `=sink`*[T: object](x: var T; y: T) {.inline, magic: "Asgn".} =
+    # ## Generic `sink`:idx: implementation that can be overriden.
+    # shallowCopy(x, y)
 
 type
   HSlice*[T, U] = object   ## "Heterogenous" slice type.
@@ -2973,7 +2973,7 @@ proc instantiationInfo*(index = -1, fullPaths = false): tuple[
   ##     # --> Test failure at example.nim:20 with 'tester(1)'
   discard
 
-proc compiles*(x: untyped): bool {.magic: "Compiles", noSideEffect, compileTime.} =
+proc compiles*(x: RootObj): bool {.magic: "Compiles", noSideEffect, compileTime.} =
   ## Special compile-time procedure that checks whether `x` can be compiled
   ## without any semantic error.
   ## This can be used to check whether a type supports some operation:
@@ -3018,7 +3018,7 @@ when not defined(nimscript) and hasAlloc:
       gcOptimizeTime,    ## optimize for speed
       gcOptimizeSpace    ## optimize for memory footprint
 
-  proc GC_disable*() {.rtl, inl, benign.}
+  proc GC_disable*() {.rtl, inl, benign.} =
     ## Disables the GC. If called `n` times, `n` calls to `GC_enable`
     ## are needed to reactivate the GC.
     ##
@@ -3027,20 +3027,25 @@ when not defined(nimscript) and hasAlloc:
     ## `GC_disableMarkAndSweep <#GC_disableMarkAndSweep>`_.
     ##
     ## **Note:** This proc is not available for JS backend and nimscript.
+    discard
 
-  proc GC_enable*() {.rtl, inl, benign.}
+  proc GC_enable*() {.rtl, inl, benign.} =
     ## Enables the GC again.
     ##
     ## **Note:** This proc is not available for JS backend and nimscript.
+    discard
 
-  proc GC_fullCollect*() {.rtl, benign.}
+  proc GC_fullCollect*() {.rtl, benign.} =
     ## Forces a full garbage collection pass.
     ## Ordinary code does not need to call this (and should not).
     ##
     ## **Note:** This proc is not available for JS backend and nimscript.
+    discard
 
-  proc GC_enableMarkAndSweep*() {.rtl, benign.}
-  proc GC_disableMarkAndSweep*() {.rtl, benign.}
+  proc GC_enableMarkAndSweep*() {.rtl, benign.} =
+    discard
+
+  proc GC_disableMarkAndSweep*() {.rtl, benign.} =
     ## The current implementation uses a reference counting garbage collector
     ## with a seldomly run mark and sweep phase to free cycles. The mark and
     ## sweep phase may take a long time and is not needed if the application
@@ -3048,39 +3053,49 @@ when not defined(nimscript) and hasAlloc:
     ## and activated separately from the rest of the GC.
     ##
     ## **Note:** This proc is not available for JS backend and nimscript.
+    discard
 
-  proc GC_getStatistics*(): string {.rtl, benign.}
+  proc GC_getStatistics*(): string {.rtl, benign.} =
     ## Returns an informative string about the GC's activity. This may be useful
     ## for tweaking.
     ##
     ## **Note:** This proc is not available for JS backend and nimscript.
+    discard
 
-  proc GC_ref*[T](x: ref T) {.magic: "GCref", benign.}
-  proc GC_ref*[T](x: seq[T]) {.magic: "GCref", benign.}
-  proc GC_ref*(x: string) {.magic: "GCref", benign.}
+  proc GC_ref*[T](x: ref T) {.magic: "GCref", benign.} =
+    discard
+
+  proc GC_ref*[T](x: seq[T]) {.magic: "GCref", benign.} =
+    discard
+
+  proc GC_ref*(x: string) {.magic: "GCref", benign.} =
     ## Marks the object `x` as referenced, so that it will not be freed until
     ## it is unmarked via `GC_unref`.
     ## If called n-times for the same object `x`,
     ## n calls to `GC_unref` are needed to unmark `x`.
     ##
     ## **Note:** This proc is not available for JS backend and nimscript.
+    discard
 
-  proc GC_unref*[T](x: ref T) {.magic: "GCunref", benign.}
-  proc GC_unref*[T](x: seq[T]) {.magic: "GCunref", benign.}
-  proc GC_unref*(x: string) {.magic: "GCunref", benign.}
+  proc GC_unref*[T](x: ref T) {.magic: "GCunref", benign.} =
+    discard
+
+  proc GC_unref*[T](x: seq[T]) {.magic: "GCunref", benign.} =
+    discard
+
+  proc GC_unref*(x: string) {.magic: "GCunref", benign.} =
     ## See the documentation of `GC_ref <#GC_ref,string>`_.
     ##
     ## **Note:** This proc is not available for JS backend and nimscript.
+    discard
 
-  proc nimGC_setStackBottom*(theStackBottom: pointer) {.compilerRtl, noinline, benign.}
+  proc nimGC_setStackBottom*(theStackBottom: pointer) {.compilerRtl, noinline, benign.} =
     ## Expands operating GC stack range to `theStackBottom`. Does nothing
     ## if current stack bottom is already lower than `theStackBottom`.
     ##
     ## **Note:** This proc is not available for JS backend and nimscript.
+    discard
 
-
-# we have to compute this here before turning it off in except.nim anyway ...
-const NimStackTrace = compileOption("stacktrace")
 
 const nimCoroutines* = false
 
@@ -3524,7 +3539,7 @@ proc deepCopy*[T](y: T): T =
   ## **Note:** This proc is not available for JS backend and nimscript.
   discard
 
-proc procCall*(x: untyped) {.magic: "ProcCall", compileTime.} =
+proc procCall*(x: RootObj) {.magic: "ProcCall", compileTime.} =
   ## Special magic to prohibit dynamic binding for `method`:idx: calls.
   ## This is similar to `super`:idx: in ordinary OO languages.
   ##
