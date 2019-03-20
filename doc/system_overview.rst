@@ -21,12 +21,11 @@ Strings and characters
 =============================     =======================================
 Proc                              Usage
 =============================     =======================================
-`len<#len,string>`_               Return the length of a string
-`chr<#chr,range[]>`_              Convert an `int` in the range `0..255`
+`len(s)<#len,string>`_            Return the length of a string
+`chr(i)<#chr,range[]>`_           Convert an `int` in the range `0..255`
                                   to a character
-`ord<#ord,T>`_                    Return `int` value of a character
+`ord(c)<#ord,T>`_                 Return `int` value of a character
 `a & b<#&,string,string>`_        Concatenate two strings
-`add<#add,string,char>`_          Add character to the string
 `$<dollars.html>`_                Convert various types to string
 =============================     =======================================
 
@@ -53,7 +52,6 @@ Proc                                       Usage
 `newSeqOfCap<#newSeqOfCap,Natural>`_       Create a new sequence with zero length
                                            and a given capacity
 `setLen<#setLen,seq[T][T],Natural>`_       Set the length of a sequence
-`len<#len,seq[T][T]>`_                     Return the length of a sequence
 `@<#@,array[IDX,T]>`_                      Turn an array into a sequence
 `high<#high,openArray[T]>`_                Return the highest index of a sequence
 `low<#low,openArray[T]>`_                  Return the lowest index of a sequence
