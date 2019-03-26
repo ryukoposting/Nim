@@ -50,6 +50,21 @@ proc splitRanges(a: seq[int], r: var seq[NonLetterRanges], s: var seq[int]) =
         inc j
     inc i
 
+proc splitSpaces(a: seq[int], r: var seq[NonLetterRanges], s: var seq[int]) =
+  var i, j: int
+  while i < a.len:
+    j = 1
+    let startCode = a[i]
+    while i + j <= a.len:
+      if i+j >= a.len or a[i+j] != startCode+j:
+        r.add (startCode, a[i+j-1])
+        i += j-1
+        break
+      else:
+        inc j
+    inc i
+  s = a
+
 
 var
   toUpper = newSeq[Singlets]()
@@ -108,7 +123,7 @@ splitRanges(toLower, tolowerRanges, tolowerSinglets)
 splitRanges(toUpper, toUpperRanges, toUpperSinglets)
 splitRanges(toTitle, toTitleRanges, toTitleSinglets)
 splitRanges(alphas, alphaRanges, alphaSinglets)
-splitRanges(unispaces, spaceRanges, unicodeSpaces)
+splitSpaces(unispaces, spaceRanges, unicodeSpaces)
 
 
 var output: string
@@ -147,18 +162,23 @@ proc outputSeq(s: seq[int], name: string, output: var string) =
     output.add "    0x$#,\n" % toHex(i, 5)
   output.add "  ]\n\n"
 
+proc outputSpaces(s: seq[int], name: string, output: var string) =
+  output.add "  $# = [\n" % name
+  for i in s:
+    output.add "    Rune 0x$#,\n" % toHex(i, 5)
+  output.add "  ]\n\n"
+
 
 output.createHeader()
 outputSeq(tolowerRanges,   "toLowerRanges",   output)
 outputSeq(tolowerSinglets, "toLowerSinglets", output)
 outputSeq(toupperRanges,   "toUpperRanges",   output)
 outputSeq(toupperSinglets, "toUpperSinglets", output)
-# outputSeq(totitleRanges,   "toTitleRanges",   output) # no entries
 outputSeq(totitleSinglets, "toTitleSinglets", output)
 outputSeq(alphaRanges,     "alphaRanges",     output)
 outputSeq(alphaSinglets,   "alphaSinglets",   output)
 outputSeq(spaceRanges,     "spaceRanges",     output)
-outputSeq(unicodeSpaces,   "unicodeSpaces",   output)
+outputSpaces(unispaces,    "unicodeSpaces",   output) # array of runes
 
 
 let outfile = "lib/pure/unicodedata/unicodeRanges.nim"
