@@ -362,7 +362,7 @@ proc runeSubStr*(s: string, pos: int, len: int = int.high): string =
         e = s.len
       result = s.substr(o, e-1)
 
-include unicodedata/unicodeRanges
+include "unicodedata/unicodeRanges.txt"
 
 proc binarySearch(c: RuneImpl, tab: openArray[int], len, stride: int): int =
   var n = len

@@ -181,5 +181,5 @@ outputSeq(spaceRanges,     "spaceRanges",     output)
 outputSpaces(unispaces,    "unicodeSpaces",   output) # array of runes
 
 
-let outfile = "lib/pure/unicodedata/unicodeRanges.nim"
+let outfile = "lib/pure/unicodedata/unicodeRanges.txt"
 outfile.writeFile(output)
