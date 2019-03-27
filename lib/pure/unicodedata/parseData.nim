@@ -1,10 +1,14 @@
 import strutils
 
 let
+  # this file was obtained from:
+  # https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt
   filename = "lib/pure/unicodedata/UnicodeData.txt"
   data = readFile(filename).strip.splitLines()
 
 const
+  # see the table here:
+  # https://www.unicode.org/reports/tr44/#GC_Values_Table
   letters = ["Lu", "Ll", "Lt", "Lm", "Lo"]
   spaces = ["Zs", "Zl", "Zp"]
 
@@ -15,6 +19,10 @@ type
 
 
 proc splitRanges(a: seq[Singlets], r: var seq[Ranges], s: var seq[Singlets]) =
+  ## Splits `toLower`, `toUpper` and `toTitle` into separate sequences:
+  ## - `r` contains continuous ranges with the same characteristics
+  ##   (their upper/lower version is the same distance away)
+  ## - `s` contains single code points
   var i, j: int
   while i < a.len:
     j = 1
@@ -34,6 +42,9 @@ proc splitRanges(a: seq[Singlets], r: var seq[Ranges], s: var seq[Singlets]) =
     inc i
 
 proc splitRanges(a: seq[int], r: var seq[NonLetterRanges], s: var seq[int]) =
+  ## Splits `alphas` and `unispaces` into separate sequences:
+  ## - `r` contains continuous ranges
+  ## - `s` contains single code points
   var i, j: int
   while i < a.len:
     j = 1
@@ -51,6 +62,10 @@ proc splitRanges(a: seq[int], r: var seq[NonLetterRanges], s: var seq[int]) =
     inc i
 
 proc splitSpaces(a: seq[int], r: var seq[NonLetterRanges], s: var seq[int]) =
+  ## Spaces are special because of the way how `isWhiteSpace` and `split`
+  ## are implemented.
+  ##
+  ## All spaces are added both to `r` (ranges) and `s` (singlets).
   var i, j: int
   while i < a.len:
     j = 1
@@ -73,17 +88,6 @@ var
   alphas = newSeq[int]()
   unispaces = newSeq[int]()
 
-  toupperRanges = newSeq[Ranges]()
-  toupperSinglets = newSeq[Singlets]()
-  tolowerRanges = newSeq[Ranges]()
-  tolowerSinglets = newSeq[Singlets]()
-  totitleRanges = newSeq[Ranges]()
-  totitleSinglets = newSeq[Singlets]()
-  spaceRanges = newSeq[NonLetterRanges]()
-  unicodeSpaces = newSeq[int]()
-  alphaRanges = newSeq[NonLetterRanges]()
-  alphaSinglets = newSeq[int]()
-
 
 proc parseData(data: seq[string]) =
   for line in data:
@@ -105,6 +109,7 @@ proc parseData(data: seq[string]) =
       let diff = 500 + lc.parseHexInt() - code
       toLower.add (code, diff)
     if tc.len > 0 and tc != uc:
+      # if titlecase is different than uppercase
       let diff = 500 + tc.parseHexInt() - code
       if diff != 500:
         toTitle.add (code, diff)
@@ -114,6 +119,17 @@ proc parseData(data: seq[string]) =
     else:
       alphas.add code
 
+var
+  toupperRanges = newSeq[Ranges]()
+  toupperSinglets = newSeq[Singlets]()
+  tolowerRanges = newSeq[Ranges]()
+  tolowerSinglets = newSeq[Singlets]()
+  totitleRanges = newSeq[Ranges]()
+  totitleSinglets = newSeq[Singlets]()
+  spaceRanges = newSeq[NonLetterRanges]()
+  unicodeSpaces = newSeq[int]()
+  alphaRanges = newSeq[NonLetterRanges]()
+  alphaSinglets = newSeq[int]()
 
 # manually add control-spaces
 spaceRanges.add (9, 13)

@@ -1113,16 +1113,26 @@ when isMainModule:
   doAssert swapCase(" ") == " "
   doAssert swapCase("Αlpha Βeta Γamma") == "αLPHA βETA γAMMA"
   doAssert swapCase("a✓B") == "A✓b"
+  doAssert swapCase("Јамогујестистаклоитоминештети") == "јАМОГУЈЕСТИСТАКЛОИТОМИНЕШТЕТИ"
+  doAssert swapCase("ὕαλονϕαγεῖνδύναμαιτοῦτοοὔμεβλάπτει") == "ὝΑΛΟΝΦΑΓΕῖΝΔΎΝΑΜΑΙΤΟῦΤΟΟὔΜΕΒΛΆΠΤΕΙ"
+  doAssert swapCase("Կրնամապակիուտեևինծիանհանգիստչըներ") == "կՐՆԱՄԱՊԱԿԻՈՒՏԵևԻՆԾԻԱՆՀԱՆԳԻՍՏՉԸՆԵՐ"
   doAssert swapCase("") == ""
 
   doAssert isAlpha("r")
   doAssert isAlpha("α")
+  doAssert isAlpha("ϙ")
+  doAssert isAlpha("ஶ")
   doAssert(not isAlpha("$"))
   doAssert(not isAlpha(""))
 
   doAssert isAlpha("Βeta")
   doAssert isAlpha("Args")
+  doAssert isAlpha("𐌼𐌰𐌲𐌲𐌻𐌴𐍃𐍄𐌰𐌽")
+  doAssert isAlpha("ὕαλονϕαγεῖνδύναμαιτοῦτοοὔμεβλάπτει")
+  doAssert isAlpha("Јамогујестистаклоитоминештети")
+  doAssert isAlpha("Կրնամապակիուտեևինծիանհանգիստչըներ")
   doAssert(not isAlpha("$Foo✓"))
+  doAssert(not isAlpha("⠙⠕⠑⠎⠝⠞"))
 
   doAssert isSpace("\t")
   doAssert isSpace("\l")
@@ -1142,6 +1152,7 @@ when isMainModule:
   doAssert toUpper("b") == "B"
   doAssert toUpper("α") == "Α"
   doAssert toUpper("✓") == "✓"
+  doAssert toUpper("ϙ") == "Ϙ"
   doAssert toUpper("") == ""
 
   doAssert toUpper("ΑΒΓ") == "ΑΒΓ"
@@ -1152,6 +1163,7 @@ when isMainModule:
   doAssert toLower("γ") == "γ"
   doAssert toLower("Γ") == "γ"
   doAssert toLower("4") == "4"
+  doAssert toLower("Ϙ") == "ϙ"
   doAssert toLower("") == ""
 
   doAssert toLower("abcdγ") == "abcdγ"
@@ -1162,6 +1174,9 @@ when isMainModule:
   doAssert reversed("先秦兩漢") == "漢兩秦先"
   doAssert reversed("as⃝df̅") == "f̅ds⃝a"
   doAssert reversed("a⃞b⃞c⃞") == "c⃞b⃞a⃞"
+  doAssert reversed("ὕαλονϕαγεῖνδύναμαιτοῦτοοὔμεβλάπτει") == "ιετπάλβεμὔοοτῦοτιαμανύδνῖεγαϕνολαὕ"
+  doAssert reversed("Јамогујестистаклоитоминештети") == "итетшенимотиолкатситсејугомаЈ"
+  doAssert reversed("Կրնամապակիուտեևինծիանհանգիստչըներ") == "րենըչտսիգնահնաիծնիևետւոիկապամանրԿ"
   doAssert len(toRunes("as⃝df̅")) == runeLen("as⃝df̅")
   const test = "as⃝"
   doAssert lastRune(test, test.len-1)[1] == 3
