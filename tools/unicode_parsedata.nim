@@ -1,9 +1,9 @@
-import strutils
+import strutils, algorithm
 
 let
   # this file was obtained from:
   # https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt
-  filename = "lib/pure/unicodedata/UnicodeData.txt"
+  filename = "tools/UnicodeData.txt"
   data = readFile(filename).strip.splitLines()
 
 const
@@ -17,6 +17,43 @@ type
   Singlets = tuple[code, diff: int]
   NonLetterRanges = tuple[start, stop: int]
 
+var
+  toUpper = newSeq[Singlets]()
+  toLower = newSeq[Singlets]()
+  toTitle = newSeq[Singlets]()
+  alphas = newSeq[int]()
+  unispaces = newSeq[int]()
+
+
+proc parseData(data: seq[string]) =
+  for line in data:
+    let
+      fields = line.split(';')
+      code = fields[0].parseHexInt()
+      category = fields[2]
+      uc = fields[12]
+      lc = fields[13]
+      tc = fields[14]
+
+    if category notin spaces and category notin letters:
+      continue
+
+    if uc.len > 0:
+      let diff = 500 + uc.parseHexInt() - code
+      toUpper.add (code, diff)
+    if lc.len > 0:
+      let diff = 500 + lc.parseHexInt() - code
+      toLower.add (code, diff)
+    if tc.len > 0 and tc != uc:
+      # if titlecase is different than uppercase
+      let diff = 500 + tc.parseHexInt() - code
+      if diff != 500:
+        toTitle.add (code, diff)
+
+    if category in spaces:
+      unispaces.add code
+    else:
+      alphas.add code
 
 proc splitRanges(a: seq[Singlets], r: var seq[Ranges], s: var seq[Singlets]) =
   ## Splits `toLower`, `toUpper` and `toTitle` into separate sequences:
@@ -82,44 +119,6 @@ proc splitSpaces(a: seq[int], r: var seq[NonLetterRanges], s: var seq[int]) =
 
 
 var
-  toUpper = newSeq[Singlets]()
-  toLower = newSeq[Singlets]()
-  toTitle = newSeq[Singlets]()
-  alphas = newSeq[int]()
-  unispaces = newSeq[int]()
-
-
-proc parseData(data: seq[string]) =
-  for line in data:
-    let
-      fields = line.split(';')
-      code = fields[0].parseHexInt()
-      category = fields[2]
-      uc = fields[12]
-      lc = fields[13]
-      tc = fields[14]
-
-    if category notin spaces and category notin letters:
-      continue
-
-    if uc.len > 0:
-      let diff = 500 + uc.parseHexInt() - code
-      toUpper.add (code, diff)
-    if lc.len > 0:
-      let diff = 500 + lc.parseHexInt() - code
-      toLower.add (code, diff)
-    if tc.len > 0 and tc != uc:
-      # if titlecase is different than uppercase
-      let diff = 500 + tc.parseHexInt() - code
-      if diff != 500:
-        toTitle.add (code, diff)
-
-    if category in spaces:
-      unispaces.add code
-    else:
-      alphas.add code
-
-var
   toupperRanges = newSeq[Ranges]()
   toupperSinglets = newSeq[Singlets]()
   tolowerRanges = newSeq[Ranges]()
@@ -131,14 +130,18 @@ var
   alphaRanges = newSeq[NonLetterRanges]()
   alphaSinglets = newSeq[int]()
 
-# manually add control-spaces
-spaceRanges.add (9, 13)
-
 parseData(data)
 splitRanges(toLower, tolowerRanges, tolowerSinglets)
 splitRanges(toUpper, toUpperRanges, toUpperSinglets)
 splitRanges(toTitle, toTitleRanges, toTitleSinglets)
 splitRanges(alphas, alphaRanges, alphaSinglets)
+
+# manually add "special" spaces
+for i in 9 .. 13:
+  unispaces.add i
+unispaces.add 0x85
+unispaces.sort()
+
 splitSpaces(unispaces, spaceRanges, unicodeSpaces)
 
 
@@ -197,5 +200,5 @@ outputSeq(spaceRanges,     "spaceRanges",     output)
 outputSpaces(unispaces,    "unicodeSpaces",   output) # array of runes
 
 
-let outfile = "lib/pure/unicodedata/unicode_ranges.nim"
+let outfile = "lib/pure/includes/unicode_ranges.nim"
 outfile.writeFile(output)

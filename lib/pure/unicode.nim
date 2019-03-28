@@ -12,6 +12,8 @@
 ## There are no specialized ``insert``, ``delete``, ``add`` and ``contains``
 ## procedures for ``seq[Rune]`` in this module because the generic variants
 ## of these procedures in the system module already work with it.
+##
+## The current version is compatible with Unicode v12.0.0.
 
 
 {.deadCodeElim: on.}  # dce option deprecated
@@ -20,8 +22,14 @@ include "system/inclrtl"
 
 type
   RuneImpl = int32 # underlying type of Rune
-  Rune* = distinct RuneImpl ## Unicode code point. Can hold any Unicode character.
-  Rune16* = distinct int16 ## 16 bit Unicode character
+  Rune* = distinct RuneImpl ## \
+    ## Type that can hold a single Unicode code point.
+    ##
+    ## A Rune may be composed with other Runes to a character on the screen.
+  Rune16* = distinct int16 ## \
+    ## Type that can hold a single UTF-16 encoded character.
+    ##
+    ## A single Rune16 may not be enough to hold an arbitrary Unicode code point.
 
 proc `<=%`*(a, b: Rune): bool = return int(a) <=% int(b)
 proc `<%`*(a, b: Rune): bool = return int(a) <% int(b)
@@ -65,8 +73,10 @@ proc runeLenAt*(s: string, i: Natural): int =
 const replRune = Rune(0xFFFD)
 
 template fastRuneAt*(s: string, i: int, result: untyped, doInc = true) =
-  ## Returns the rune ``s[i]`` in ``result``. If ``doInc == true``
-  ## ``i`` is incremented by the number of bytes that have been processed.
+  ## Returns the rune ``s[i]`` in ``result``.
+  ##
+  ## If ``doInc == true`` (default), ``i`` is incremented by the number
+  ## of bytes that have been processed.
   bind ones
   if ord(s[i]) <=% 127:
     result = Rune(ord(s[i]))
@@ -177,7 +187,9 @@ proc runeAt*(s: string, i: Natural): Rune =
 
 template fastToUTF8Copy*(c: Rune, s: var string, pos: int, doInc = true) =
   ## Copies UTF-8 representation of ``c`` into the preallocated string ``s``
-  ## starting at position ``pos``. If ``doInc == true``, ``pos`` is incremented
+  ## starting at position ``pos``.
+  ##
+  ## If ``doInc == true`` (default), ``pos`` is incremented
   ## by the number of bytes that have been processed.
   ##
   ## To be the most efficient, make sure ``s`` is preallocated
@@ -260,7 +272,7 @@ proc runeOffset*(s: string, pos:Natural, start: Natural = 0): int =
   ## at position ``pos`` in ``s`` with an optional start byte position.
   ## Returns the special value -1 if it runs out of the string.
   ##
-  ## Beware: This can lead to unoptimized code and slow execution!
+  ## **Beware:** This can lead to unoptimized code and slow execution!
   ## Most problems can be solved more efficiently by using an iterator
   ## or conversion to a seq of Rune.
   var
@@ -276,7 +288,7 @@ proc runeOffset*(s: string, pos:Natural, start: Natural = 0): int =
 proc runeAtPos*(s: string, pos: int): Rune =
   ## Returns the rune at position ``pos``.
   ##
-  ## Beware: This can lead to unoptimized code and slow execution!
+  ## **Beware:** This can lead to unoptimized code and slow execution!
   ## Most problems can be solved more efficiently by using an iterator
   ## or conversion to a seq of Rune.
   fastRuneAt(s, runeOffset(s, pos), result, false)
@@ -284,21 +296,22 @@ proc runeAtPos*(s: string, pos: int): Rune =
 proc runeStrAtPos*(s: string, pos: Natural): string =
   ## Returns the rune at position ``pos`` as UTF8 String.
   ##
-  ## Beware: This can lead to unoptimized code and slow execution!
+  ## **Beware:** This can lead to unoptimized code and slow execution!
   ## Most problems can be solved more efficiently by using an iterator
   ## or conversion to a seq of Rune.
   let o = runeOffset(s, pos)
   s[o.. (o+runeLenAt(s, o)-1)]
 
 proc runeReverseOffset*(s: string, rev:Positive): (int, int) =
-  ## Returns a tuple with the the byte offset of the
+  ## Returns a tuple with the byte offset of the
   ## rune at position ``rev`` in ``s``, counting
   ## from the end (starting with 1) and the total
-  ## number of runes in the string. Returns a negative value
-  ## for offset if there are to few runes in the string to
-  ## satisfy the request.
+  ## number of runes in the string.
   ##
-  ## Beware: This can lead to unoptimized code and slow execution!
+  ## Returns a negative value for offset if there are to few runes in
+  ## the string to satisfy the request.
+  ##
+  ## **Beware:** This can lead to unoptimized code and slow execution!
   ## Most problems can be solved more efficiently by using an iterator
   ## or conversion to a seq of Rune.
   var
@@ -317,8 +330,10 @@ proc runeReverseOffset*(s: string, rev:Positive): (int, int) =
   return (x, -a+rev.int)
 
 proc runeSubStr*(s: string, pos: int, len: int = int.high): string =
-  ## Returns the UTF-8 substring starting at codepoint ``pos``
-  ## with ``len`` codepoints. If ``pos`` or ``len`` is negative they count from
+  ## Returns the UTF-8 substring starting at code point ``pos``
+  ## with ``len`` code points.
+  ##
+  ## If ``pos`` or ``len`` is negative they count from
   ## the end of the string. If ``len`` is not given it means the longest
   ## possible string.
   ##
@@ -362,7 +377,7 @@ proc runeSubStr*(s: string, pos: int, len: int = int.high): string =
         e = s.len
       result = s.substr(o, e-1)
 
-include "unicodedata/unicode_ranges"
+include "includes/unicode_ranges"
 
 proc binarySearch(c: RuneImpl, tab: openArray[int], len, stride: int): int =
   var n = len
@@ -381,6 +396,7 @@ proc binarySearch(c: RuneImpl, tab: openArray[int], len, stride: int): int =
 
 proc toLower*(c: Rune): Rune {.rtl, extern: "nuc$1", procvar.} =
   ## Converts ``c`` into lower case. This works for any rune.
+  ##
   ## If possible, prefer ``toLower`` over ``toUpper``.
   var c = RuneImpl(c)
   var p = binarySearch(c, tolowerRanges, len(tolowerRanges) div 3, 3)
@@ -393,6 +409,7 @@ proc toLower*(c: Rune): Rune {.rtl, extern: "nuc$1", procvar.} =
 
 proc toUpper*(c: Rune): Rune {.rtl, extern: "nuc$1", procvar.} =
   ## Converts ``c`` into upper case. This works for any rune.
+  ##
   ## If possible, prefer ``toLower`` over ``toUpper``.
   var c = RuneImpl(c)
   var p = binarySearch(c, toupperRanges, len(toupperRanges) div 3, 3)
@@ -412,7 +429,8 @@ proc toTitle*(c: Rune): Rune {.rtl, extern: "nuc$1", procvar.} =
   return Rune(c)
 
 proc isLower*(c: Rune): bool {.rtl, extern: "nuc$1", procvar.} =
-  ## Returns true iff ``c`` is a lower case rune.
+  ## Returns true if ``c`` is a lower case rune.
+  ##
   ## If possible, prefer ``isLower`` over ``isUpper``.
   var c = RuneImpl(c)
   # Note: toUpperRanges is correct here!
@@ -424,7 +442,8 @@ proc isLower*(c: Rune): bool {.rtl, extern: "nuc$1", procvar.} =
     return true
 
 proc isUpper*(c: Rune): bool {.rtl, extern: "nuc$1", procvar.} =
-  ## Returns true iff ``c`` is a upper case rune.
+  ## Returns true if ``c`` is a upper case rune.
+  ##
   ## If possible, prefer ``isLower`` over ``isUpper``.
   var c = RuneImpl(c)
   # Note: toLowerRanges is correct here!
@@ -436,7 +455,7 @@ proc isUpper*(c: Rune): bool {.rtl, extern: "nuc$1", procvar.} =
     return true
 
 proc isAlpha*(c: Rune): bool {.rtl, extern: "nuc$1", procvar.} =
-  ## Returns true iff ``c`` is an *alpha* rune (i.e., a letter)
+  ## Returns true if ``c`` is an *alpha* rune (i.e., a letter).
   if isUpper(c) or isLower(c):
     return true
   var c = RuneImpl(c)
@@ -448,18 +467,18 @@ proc isAlpha*(c: Rune): bool {.rtl, extern: "nuc$1", procvar.} =
     return true
 
 proc isTitle*(c: Rune): bool {.rtl, extern: "nuc$1", procvar.} =
-  ## Returns true iff ``c`` is a Unicode titlecase character.
+  ## Returns true if ``c`` is a Unicode titlecase code point.
   return isUpper(c) and isLower(c)
 
 proc isWhiteSpace*(c: Rune): bool {.rtl, extern: "nuc$1", procvar.} =
-  ## Returns true iff ``c`` is a Unicode whitespace character.
+  ## Returns true if ``c`` is a Unicode whitespace code point.
   var c = RuneImpl(c)
   var p = binarySearch(c, spaceRanges, len(spaceRanges) div 2, 2)
   if p >= 0 and c >= spaceRanges[p] and c <= spaceRanges[p+1]:
     return true
 
 proc isCombining*(c: Rune): bool {.rtl, extern: "nuc$1", procvar.} =
-  ## Returns true iff ``c`` is a Unicode combining character.
+  ## Returns true if ``c`` is a Unicode combining code unit.
   var c = RuneImpl(c)
 
   # Optimized to return false immediately for ASCII
@@ -483,12 +502,12 @@ template runeCheck(s, runeProc) =
 
 proc isAlpha*(s: string): bool {.noSideEffect, procvar,
   rtl, extern: "nuc$1Str".} =
-  ## Returns true iff ``s`` contains all alphabetic runes.
+  ## Returns true if ``s`` contains all alphabetic runes.
   runeCheck(s, isAlpha)
 
 proc isSpace*(s: string): bool {.noSideEffect, procvar,
   rtl, extern: "nuc$1Str".} =
-  ## Returns true iff ``s`` contains all whitespace runes.
+  ## Returns true if ``s`` contains all whitespace runes.
   runeCheck(s, isWhiteSpace)
 
 template runeCaseCheck(s, runeProc, skipNonAlpha) =
@@ -740,9 +759,9 @@ proc toRunes*(s: string): seq[Rune] =
 proc cmpRunesIgnoreCase*(a, b: string): int {.rtl, extern: "nuc$1", procvar.} =
   ## Compares two UTF-8 strings and ignores the case. Returns:
   ##
-  ## | 0 iff a == b
-  ## | < 0 iff a < b
-  ## | > 0 iff a > b
+  ## | 0 if a == b
+  ## | < 0 if a < b
+  ## | > 0 if a > b
   var i = 0
   var j = 0
   var ar, br: Rune
@@ -790,7 +809,7 @@ proc reversed*(s: string): string =
 
 proc graphemeLen*(s: string; i: Natural): Natural =
   ## The number of bytes belonging to ``s[i]`` including following combining
-  ## characters.
+  ## code unit.
   var j = i.int
   var r, r2: Rune
   if j < s.len:
@@ -943,13 +962,13 @@ iterator split*(s: string, sep: Rune, maxsplit: int = -1): string =
 
 proc split*(s: string, seps: openarray[Rune] = unicodeSpaces, maxsplit: int = -1): seq[string] {.
   noSideEffect, rtl, extern: "nucSplitRunes".} =
-  ## The same as the `split iterator <#split.i,string,openarray[Rune]>`_, but is a
-  ## proc that returns a sequence of substrings.
+  ## The same as the `split iterator <#split.i,string,openArray[Rune],int>`_,
+  ## but is a proc that returns a sequence of substrings.
   accResult(split(s, seps, maxsplit))
 
 proc split*(s: string, sep: Rune, maxsplit: int = -1): seq[string] {.noSideEffect,
   rtl, extern: "nucSplitRune".} =
-  ## The same as the `split iterator <#split.i,string,Rune>`_, but is a proc
+  ## The same as the `split iterator <#split.i,string,Rune,int>`_, but is a proc
   ## that returns a sequence of substrings.
   accResult(split(s, sep, maxsplit))
 
@@ -1022,7 +1041,7 @@ proc align*(s: string, count: Natural, padding = ' '.Rune): string {.
   ## ``padding`` characters (by default spaces) are added before ``s`` resulting in
   ## right alignment. If ``s.runelen >= count``, no spaces are added and ``s`` is
   ## returned unchanged. If you need to left align a string use the `alignLeft
-  ## proc <#alignLeft>`_.
+  ## proc <#alignLeft,string,Natural>`_.
   runnableExamples:
     assert align("abc", 4) == " abc"
     assert align("a", 0) == "a"
@@ -1043,13 +1062,13 @@ proc align*(s: string, count: Natural, padding = ' '.Rune): string {.
 
 proc alignLeft*(s: string, count: Natural, padding = ' '.Rune): string {.
     noSideEffect.} =
-  ## Left-Aligns a unicode string ``s`` with ``padding``, so that it has a
+  ## Left-aligns a unicode string ``s`` with ``padding``, so that it has a
   ## rune-length of ``count``.
   ##
   ## ``padding`` characters (by default spaces) are added after ``s`` resulting in
   ## left alignment. If ``s.runelen >= count``, no spaces are added and ``s`` is
   ## returned unchanged. If you need to right align a string use the `align
-  ## proc <#align>`_.
+  ## proc <#align,string,Natural>`_.
   runnableExamples:
     assert alignLeft("abc", 4) == "abc "
     assert alignLeft("a", 0) == "a"
