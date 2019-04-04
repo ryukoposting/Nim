@@ -28,6 +28,7 @@ pkg "karax", "nim c tests/tester.nim"
 pkg "loopfusion"
 pkg "nake", "nim c nakefile.nim"
 pkg "neo", "nim c -d:blas=openblas tests/all.nim", "", true
+pkg "nicy", "nim c src/nicy.nim"
 pkg "nigui", "nim c -o:niguii src/nigui.nim"
 pkg "nimcrypto", "nim c tests/testapi.nim"
 pkg "NimData", "nim c -o:nimdataa src/nimdata.nim", "", true
@@ -38,6 +39,7 @@ pkg "nimpy", "nim c tests/nimfrompy.nim"
 pkg "nimsl", "nim c test.nim"
 pkg "nimsvg"
 pkg "nimx", "nim c --threads:on test/main.nim", "", true
+pkg "norm", "nim c -o:normm src/norm.nim"
 pkg "ormin", "nim c -o:orminn ormin.nim", "", true
 pkg "parsetoml"
 pkg "patty"
