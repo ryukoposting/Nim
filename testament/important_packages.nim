@@ -6,37 +6,37 @@ template pkg(name: string; cmd = "nimble test"; version = ""; hasDeps = false): 
 var packages*: seq[tuple[name, cmd, version: string; hasDeps: bool]] = @[]
 
 
-pkg "arraymancer", "nim c src/arraymancer.nim", "", true
-pkg "ast_pattern_matching", "nim c tests/test1.nim"
+pkg "arraymancer", "nim c -r tests/tests_cpu.nim", "", true
+pkg "ast_pattern_matching", "nim c -r tests/test1.nim"
 pkg "blscurve", "", "", true
-pkg "bncurve", "nim c tests/tarith.nim", "", true
-pkg "c2nim", "nim c testsuite/tester.nim"
-pkg "chronicles", "nim c -o:chr chronicles.nim", "", true
-pkg "chronos", "nim c tests/teststream.nim"
-pkg "cligen", "nim c -o:cligenn cligen.nim"
-pkg "compactdict", "nim c tests/test1.nim"
+pkg "bncurve", "", "", true
+pkg "c2nim", "nim c -r testsuite/tester.nim"
+pkg "chronicles", "nim c -o:chr -r chronicles.nim", "", true
+pkg "chronos"
+pkg "cligen", "nim c -o:cligenn -r cligen.nim"
+pkg "compactdict"
 pkg "criterion"
 pkg "docopt"
 pkg "gara", "nim c tests/test_gara.nim"
 pkg "glob"
 pkg "gnuplot"
-pkg "hts", "nim c tests/all.nim"
+pkg "hts", "nim c -r tests/all.nim"
 pkg "inim"
 pkg "itertools", "nim doc src/itertools.nim"
 pkg "iterutils"
-pkg "karax", "nim c tests/tester.nim"
+pkg "karax", "nim c -r tests/tester.nim"
 pkg "loopfusion"
-pkg "nake", "nim c nakefile.nim"
+pkg "nake", "nim c -r nakefile install"
 pkg "neo", "nim c -d:blas=openblas tests/all.nim", "", true
 pkg "nicy", "nim c src/nicy.nim"
-pkg "nigui", "nim c -o:niguii src/nigui.nim"
-pkg "nimcrypto", "nim c tests/testapi.nim"
-pkg "NimData", "nim c -o:nimdataa src/nimdata.nim", "", true
-pkg "nimes", "nim c src/nimes.nim", "", true
-pkg "nimgame2", "nim c nimgame2/nimgame.nim", "", true
+pkg "nigui", "nim c -o:niguii -r src/nigui.nim"
+pkg "nimcrypto", "nim c -r tests/testapi.nim"
+pkg "NimData", "", "", true
+pkg "nimes", "nim c -r src/nimes.nim", "", true
+pkg "nimgame2", "nim c -r nimgame2/nimgame.nim", "", true
 pkg "nimongo", "nimble test_ci", "", true
-pkg "nimpy", "nim c tests/nimfrompy.nim"
-pkg "nimsl", "nim c test.nim"
+pkg "nimpy", "nim c -r tests/nimfrompy.nim"
+pkg "nimsl"
 pkg "nimsvg"
 pkg "nimx", "nim c --threads:on test/main.nim", "", true
 pkg "norm", "nim c -o:normm src/norm.nim"
@@ -44,10 +44,10 @@ pkg "ormin", "nim c -o:orminn ormin.nim", "", true
 pkg "parsetoml"
 pkg "patty"
 pkg "plotly", "nim c examples/all.nim", "", true
-pkg "protobuf", "nim c -o:protobuff src/protobuf.nim", "", true
-pkg "regex", "nim c src/regex"
-pkg "rosencrantz", "nim c -o:rsncntz rosencrantz.nim"
-pkg "sdl1", "nim c src/sdl.nim"
-pkg "sdl2_nim", "nim c sdl2/sdl.nim"
-pkg "stint", "nim c -o:stintt stint.nim"
-pkg "zero_functional", "nim c test.nim"
+pkg "protobuf", "", "", true
+pkg "regex"
+pkg "rosencrantz", "nim c -o:rsncntz -r rosencrantz.nim"
+pkg "sdl1", "nim c -r src/sdl.nim"
+pkg "sdl2_nim", "nim c -r sdl2/sdl.nim"
+pkg "stint", "nim c -o:stintt -r stint.nim"
+pkg "zero_functional", "nim c -r test.nim"
