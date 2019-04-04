@@ -12,7 +12,7 @@ pkg "blscurve", "", "", true
 pkg "bncurve", "nim c tests/tarith.nim", "", true
 pkg "c2nim", "nim c testsuite/tester.nim"
 pkg "chronicles", "nim c -o:chr chronicles.nim", "", true
-# pkg "chronos", "nim c tests/teststream.nim"
+pkg "chronos", "nim c tests/teststream.nim"
 pkg "cligen", "nim c -o:cligenn cligen.nim"
 pkg "compactdict", "nim c tests/test1.nim"
 pkg "criterion"
@@ -37,7 +37,8 @@ pkg "nimongo", "nimble test_ci", "", true
 pkg "nimpy", "nim c tests/nimfrompy.nim"
 pkg "nimsl", "nim c test.nim"
 pkg "nimsvg"
-# pkg "nimx", "nim c --threads:on test/main.nim", "", true
+pkg "nimx", "nim c --threads:on test/main.nim", "", true
+pkg "ormin", "nim c -o:orminn ormin.nim", "", true
 pkg "parsetoml"
 pkg "patty"
 pkg "plotly", "nim c examples/all.nim", "", true
