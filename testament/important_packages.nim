@@ -32,8 +32,8 @@ pkg "nicy", "nim c src/nicy.nim"
 pkg "nigui", "nim c -o:niguii -r src/nigui.nim"
 pkg "nimcrypto", "nim c -r tests/testapi.nim"
 pkg "NimData", "", "", true
-pkg "nimes", "nim c -r src/nimes.nim", "", true
-pkg "nimgame2", "nim c -r nimgame2/nimgame.nim", "", true
+pkg "nimes", "nim c src/nimes.nim", "", true
+pkg "nimgame2", "nim c nimgame2/nimgame.nim", "", true
 pkg "nimongo", "nimble test_ci", "", true
 pkg "nimpy", "nim c -r tests/nimfrompy.nim"
 pkg "nimsl"
@@ -44,8 +44,8 @@ pkg "ormin", "nim c -o:orminn ormin.nim", "", true
 pkg "parsetoml"
 pkg "patty"
 pkg "plotly", "nim c examples/all.nim", "", true
-pkg "protobuf", "", "", true
-pkg "regex"
+pkg "protobuf", "nim c -o:protobuff -r src/protobuf.nim", "", true
+pkg "regex", "", "", true
 pkg "rosencrantz", "nim c -o:rsncntz -r rosencrantz.nim"
 pkg "sdl1", "nim c -r src/sdl.nim"
 pkg "sdl2_nim", "nim c -r sdl2/sdl.nim"
