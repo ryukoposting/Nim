@@ -6,7 +6,7 @@ template pkg(name: string; cmd = "nimble test"; version = ""; hasDeps = false): 
 var packages*: seq[tuple[name, cmd, version: string; hasDeps: bool]] = @[]
 
 
-pkg "arraymancer", "nim c -r tests/tests_cpu.nim", "", true
+pkg "arraymancer", "nim c -r src/arraymancer.nim", "", true
 pkg "ast_pattern_matching", "nim c -r tests/test1.nim"
 pkg "blscurve", "", "", true
 pkg "bncurve", "", "", true
@@ -17,16 +17,16 @@ pkg "cligen", "nim c -o:cligenn -r cligen.nim"
 pkg "compactdict"
 pkg "criterion"
 pkg "docopt"
-pkg "gara", "nim c tests/test_gara.nim"
+pkg "gara"
 pkg "glob"
 pkg "gnuplot"
-pkg "hts", "nim c -r tests/all.nim"
+pkg "hts", "nim c -o:htss -r src/hts.nim"
 pkg "inim"
 pkg "itertools", "nim doc src/itertools.nim"
 pkg "iterutils"
 pkg "karax", "nim c -r tests/tester.nim"
 pkg "loopfusion"
-pkg "nake", "nim c -r nakefile install"
+pkg "nake", "nim c nakefile.nim"
 pkg "neo", "nim c -d:blas=openblas tests/all.nim", "", true
 pkg "nicy", "nim c src/nicy.nim"
 pkg "nigui", "nim c -o:niguii -r src/nigui.nim"
