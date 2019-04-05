@@ -10,7 +10,7 @@ pkg "arraymancer", "nim c -r src/arraymancer.nim", "", true
 pkg "ast_pattern_matching", "nim c -r tests/test1.nim"
 pkg "blscurve", "", "", true
 pkg "bncurve", "", "", true
-pkg "c2nim", "nim c -r testsuite/tester.nim"
+pkg "c2nim", "nim c testsuite/tester.nim"
 pkg "chronicles", "nim c -o:chr -r chronicles.nim", "", true
 pkg "chronos"
 pkg "cligen", "nim c -o:cligenn -r cligen.nim"
@@ -31,7 +31,7 @@ pkg "neo", "nim c -d:blas=openblas tests/all.nim", "", true
 pkg "nicy", "nim c src/nicy.nim"
 pkg "nigui", "nim c -o:niguii -r src/nigui.nim"
 pkg "nimcrypto", "nim c -r tests/testapi.nim"
-pkg "NimData", "", "", true
+pkg "NimData", "nim c -o:nimdataa -r src/nimdata.nim", "", true
 pkg "nimes", "nim c src/nimes.nim", "", true
 pkg "nimgame2", "nim c nimgame2/nimgame.nim", "", true
 pkg "nimongo", "nimble test_ci", "", true
@@ -45,7 +45,7 @@ pkg "parsetoml"
 pkg "patty"
 pkg "plotly", "nim c examples/all.nim", "", true
 pkg "protobuf", "nim c -o:protobuff -r src/protobuf.nim", "", true
-pkg "regex", "", "", true
+pkg "regex", "nim c src/regex", "", true
 pkg "rosencrantz", "nim c -o:rsncntz -r rosencrantz.nim"
 pkg "sdl1", "nim c -r src/sdl.nim"
 pkg "sdl2_nim", "nim c -r sdl2/sdl.nim"
